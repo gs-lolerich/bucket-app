@@ -1,0 +1,1162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>[Un]Churned International Podcast Day Game</title>
+  <style>
+    :root {
+      --deep-blue: #153d5e;
+      --deep-blue-dark: #0d2538;
+      --deep-blue-mid: #22649f;
+      --deep-blue-light: #88c7ff;
+      --deep-blue-soft: #e9f4ff;
+      --electric-blue: #38a2ff;
+      --unicorn: #d8c5ef;
+      --grape: #4e5bca;
+      --grape-dark: #2f3779;
+      --peach: #fcbeb9;
+      --starfish: #f75d4f;
+      --starfish-soft: #fddfdc;
+      --white: #ffffff;
+      --glass-bg: rgba(255, 255, 255, 0.25);
+      --glass-border: rgba(255, 255, 255, 0.3);
+      --shadow-base: rgba(0, 0, 0, 0.1);
+      --transition-fast: 0.2s ease;
+      --transition-medium: 0.3s ease;
+      --transition-slow: 0.5s ease;
+      --max-width: 1200px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      color: var(--white);
+      background: linear-gradient(135deg, var(--deep-blue) 0%, var(--deep-blue-mid) 50%, var(--deep-blue-light) 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(21, 61, 94, 0.85), rgba(13, 37, 56, 0.95));
+      z-index: -2;
+    }
+
+    main {
+      width: 100%;
+      max-width: var(--max-width);
+      padding: 48px 20px 96px;
+      flex: 1 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .glass-card {
+      background: var(--glass-bg);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid var(--glass-border);
+      border-radius: 15px;
+      box-shadow: 0 8px 32px var(--shadow-base);
+    }
+
+    .dashboard-header {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .brand-logo {
+      font-size: clamp(2.2rem, 4vw, 3rem);
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      margin: 0;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .brand-logo span {
+      display: inline-block;
+    }
+
+    .logo-bracket {
+      color: var(--electric-blue);
+    }
+
+    .logo-text {
+      color: var(--white);
+    }
+
+    .oh-no-panel {
+      padding: 24px;
+      text-align: center;
+      line-height: 1.6;
+      font-size: 1rem;
+    }
+
+    .oh-no-panel p {
+      margin: 0;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+    }
+
+    .dashboard-columns {
+      display: grid;
+      grid-template-columns: 30% 1fr;
+      gap: 32px;
+      align-items: stretch;
+    }
+
+    .bucket-area {
+      position: relative;
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+      height: 500px;
+    }
+
+    .bucket-heading {
+      margin: 0;
+      font-size: 1.4rem;
+      color: var(--white);
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+      text-align: center;
+    }
+
+    .bucket-stage {
+      position: relative;
+      width: 100%;
+      max-width: 260px;
+      aspect-ratio: 1/1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(13, 37, 56, 0.5);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.25);
+      flex: 1 1 auto;
+    }
+
+    .bucket-stage img {
+      width: 100%;
+      height: auto;
+      display: block;
+      filter: drop-shadow(0 10px 24px rgba(0, 0, 0, 0.35));
+    }
+
+    .score-panel {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
+      margin-top: auto;
+    }
+
+    .score-panel span {
+      font-weight: 700;
+    }
+
+    .score-share-callout {
+      margin: 14px 0 0;
+      font-size: 1rem;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      color: var(--white);
+      text-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+    }
+
+    .checklist-card {
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      height: 500px;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(56, 162, 255, 0.6) rgba(13, 37, 56, 0.3);
+    }
+
+    .checklist-header {
+      text-align: center;
+    }
+
+    .checklist-header h2 {
+      margin: 0;
+      font-size: 1.1rem;
+      color: var(--white);
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
+    }
+
+    .checklist-subhead {
+      margin: 4px 0 0;
+      font-size: 0.9rem;
+      font-style: italic;
+      color: var(--deep-blue-soft);
+    }
+
+    .checklist-card::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .checklist-card::-webkit-scrollbar-track {
+      background: rgba(13, 37, 56, 0.4);
+      border-radius: 12px;
+    }
+
+    .checklist-card::-webkit-scrollbar-thumb {
+      background: rgba(56, 162, 255, 0.7);
+      border-radius: 12px;
+    }
+
+    .platform-section {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .platform-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(13, 37, 56, 0.6);
+      padding: 14px 18px;
+      border-radius: 12px;
+      cursor: pointer;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      transition: background var(--transition-fast), transform var(--transition-fast);
+    }
+
+    .platform-header:hover,
+    .platform-header:focus {
+      background: rgba(13, 37, 56, 0.75);
+      transform: translateY(-2px);
+      outline: none;
+    }
+
+    .platform-header h3 {
+      margin: 0;
+      font-size: 1.1rem;
+      color: var(--white);
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.55);
+    }
+
+    .task-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding: 0 8px 12px 8px;
+    }
+
+    .task-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px;
+      border-radius: 14px;
+      border-left: 4px solid transparent;
+      background: rgba(13, 37, 56, 0.5);
+      transition: background var(--transition-fast), border var(--transition-fast), transform var(--transition-fast);
+    }
+
+    .task-item.completed {
+      background: linear-gradient(135deg, var(--starfish-soft), var(--unicorn));
+      border-left-color: var(--grape);
+      color: var(--grape-dark);
+      transform: translateY(-1px);
+    }
+
+    .task-item label {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      font-weight: 500;
+      color: inherit;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    .task-item a {
+      color: var(--electric-blue);
+      font-weight: 600;
+      text-decoration: underline;
+    }
+
+    .custom-checkbox {
+      position: relative;
+      width: 24px;
+      height: 24px;
+      flex: 0 0 24px;
+    }
+
+    .custom-checkbox input {
+      appearance: none;
+      width: 24px;
+      height: 24px;
+      border-radius: 8px;
+      border: 2px solid var(--starfish);
+      background: transparent;
+      cursor: pointer;
+      transition: background var(--transition-fast), border var(--transition-fast), transform var(--transition-fast);
+    }
+
+    .custom-checkbox input:focus-visible {
+      outline: 2px solid var(--electric-blue);
+      outline-offset: 2px;
+    }
+
+    .custom-checkbox input:checked {
+      background: var(--starfish);
+      border-color: var(--starfish);
+      position: relative;
+    }
+
+    .custom-checkbox input:checked::after {
+      content: "\2605";
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--unicorn);
+      font-size: 1rem;
+    }
+
+    .leaderboard {
+      padding: 28px;
+      background: var(--glass-bg);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 18px;
+      border: 1px solid var(--glass-border);
+      box-shadow: 0 8px 32px var(--shadow-base);
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    #confettiCanvas {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 60;
+    }
+
+    .leaderboard h2 {
+      margin: 0;
+      text-align: center;
+      font-size: 1.6rem;
+      color: var(--electric-blue);
+      text-shadow: 0 0 16px rgba(56, 162, 255, 0.8);
+    }
+
+    .leaderboard-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px 32px;
+    }
+
+    .leaderboard-column {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .leaderboard-entry {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: "Courier New", Courier, monospace;
+      font-size: 1rem;
+      padding: 10px 18px;
+      border-radius: 12px;
+      border-left: 4px solid transparent;
+      background: rgba(13, 37, 56, 0.5);
+      color: var(--white);
+      position: relative;
+    }
+
+    .leaderboard-entry.top-three {
+      border-left-color: var(--peach);
+    }
+
+    .leaderboard-entry.current-user {
+      background: linear-gradient(135deg, rgba(78, 91, 202, 0.85), rgba(216, 197, 239, 0.9));
+      border: 3px solid var(--electric-blue);
+      transform: scale(1.02);
+      box-shadow: 0 0 20px rgba(56, 162, 255, 0.7);
+      color: var(--white);
+      animation: glowPulse 2s ease-in-out infinite alternate;
+    }
+
+    @keyframes glowPulse {
+      0% {
+        box-shadow: 0 0 14px rgba(56, 162, 255, 0.45);
+      }
+      100% {
+        box-shadow: 0 0 28px rgba(56, 162, 255, 0.85);
+      }
+    }
+
+    .leaderboard-entry span {
+      display: inline-block;
+    }
+
+    .leaderboard-dots {
+      flex: 1;
+      height: 1px;
+      border-bottom: 2px dotted rgba(233, 244, 255, 0.35);
+      margin: 0 8px;
+      position: relative;
+      top: -3px;
+    }
+
+    .footer {
+      margin-top: auto;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      padding: 24px 16px 48px;
+    }
+
+    .footer-content {
+      width: min(var(--max-width), 100%);
+      padding: 18px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      text-align: center;
+      color: var(--white);
+      font-size: 0.95rem;
+    }
+
+    @media (max-width: 1024px) {
+      .dashboard-columns {
+        grid-template-columns: 1fr;
+      }
+
+      .bucket-area {
+        order: -1;
+        height: 400px;
+      }
+
+      .checklist-card {
+        height: 400px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      main {
+        padding: 32px 16px 80px;
+      }
+
+      .checklist-card {
+        height: 350px;
+        padding: 18px;
+      }
+
+      .bucket-area {
+        height: 350px;
+      }
+
+      .leaderboard-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="confettiCanvas" aria-hidden="true"></canvas>
+  <main aria-labelledby="dashboardHeading">
+    <header class="dashboard-header" role="banner">
+      <h1 id="dashboardHeading" class="brand-logo" aria-label="Unchurned">
+        <span class="logo-bracket">[Un]</span><span class="logo-text">Churned</span>
+      </h1>
+    </header>
+
+    <section class="oh-no-panel glass-card" role="status" aria-live="polite">
+      <p id="ohNoMessage"><strong><span id="screenNameLabel">Friend</span>, Your Customer Bucket is [Un]der Attack! 💦</strong><br />
+        Every time you pour new customers in, the leaks of churn threaten to [un]do your hard work. Revenue is bound to slip away, [un]less you patch it up! But hurry… if you don't plug the leaks soon, all that watARR may [un]fortunately leak out!
+      </p>
+    </section>
+
+    <section class="dashboard-columns">
+      <aside class="bucket-area glass-card" aria-label="Bucket patching game">
+        <h2 class="bucket-heading">Fix the Leaky Bucket</h2>
+        <div class="bucket-stage" id="bucketStage" aria-live="polite">
+          <img id="bucketImage" src="img/bucket-0.png" alt="Customer bucket with leaks" />
+        </div>
+        <div class="score-panel" aria-live="polite">
+          <span id="scoreDisplay">Score: 0 points</span>
+          <span id="bucketDisplay">Buckets Patched: 0 / 7</span>
+          <h3 class="score-share-callout">Pro Level: Screenshot and share your score on Slack ✨</h3>
+        </div>
+      </aside>
+
+      <section class="checklist-card glass-card" id="checklistCard" aria-live="polite">
+        <header class="checklist-header">
+          <h2>Earn patches (and points!) every time you complete a task on the checklist.</h2>
+          <p class="checklist-subhead">You're on the honor system, <span id="honorNameLabel">Friend</span> 👀</p>
+        </header>
+        <!-- Checklist populated by JS -->
+      </section>
+    </section>
+
+    <section class="leaderboard glass-card" aria-label="Hall of Fame">
+      <h2>🏆 HALL OF FAME 🏆</h2>
+      <div class="leaderboard-grid" id="leaderboardGrid">
+        <!-- Entries inserted via JS -->
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-content glass-card">
+      <span>Built with 💗 by the [Un]Churned team at Gainsight</span>
+      <span>Because every retention enthusiast deserves a weekly dose of churn escapism ✨</span>
+    </div>
+  </footer>
+
+  <script type="module">
+    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+    const supabase = createClient(
+      'https://zxjclmnxjavejrhfkuuj.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp4amNsbW54amF2ZWpyaGZrdXVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkzODQ0MzIsImV4cCI6MjA3NDk2MDQzMn0.EdNZQOYypn1ZrH6iT15usXCruwkMFuCNu6n-dUDpALE'
+    );
+
+    (function () {
+      const STORAGE_KEY = "unchurnedGameState";
+
+      const bucketFrames = [
+        "img/bucket-0.png",
+        "img/bucket-1.png",
+        "img/bucket-2.png",
+        "img/bucket-3.png",
+        "img/bucket-4.png",
+        "img/bucket-5.png"
+      ];
+
+      const leaderboardTemplate = [
+        { username: "CyberNova135", score: 135 },
+        { username: "Pixel_Pal130", score: 130 },
+        { username: "DialUpHero128", score: 128 },
+        { username: "GlitchQueen122", score: 122 },
+        { username: "MixaFixa118", score: 118 },
+        { username: "ChatBuzz116", score: 116 },
+        { username: "LaserTag110", score: 110 },
+        { username: "BetaBeats108", score: 108 },
+        { username: "FrostWire104", score: 104 },
+        { username: "PagerParty102", score: 102 },
+        { username: "ArcadeAce100", score: 100 },
+        { username: "NetNinja95", score: 95 },
+        { username: "PixelPenguin92", score: 92 },
+        { username: "DialDream88", score: 88 },
+        { username: "MixtapeMagic84", score: 84 },
+        { username: "LaserLuv78", score: 78 },
+        { username: "WaveFile72", score: 72 },
+        { username: "JukeBox50", score: 50 }
+      ];
+
+      const platformTasks = [
+        {
+          id: "linkedin",
+          name: "LinkedIn",
+          emoji: "💼",
+          tasks: [
+            { id: "li-like-150", label: "Like Gainsight’s 150th celebration post.", link: "https://www.linkedin.com/posts/gainsight_internationalpodcastday-customersuccess-unchurned-activity-7379393976501559296-bae5?utm_source=share&utm_medium=member_desktop&rcm=ACoAAAM4Ch0BTWRFkZJF5IFaaE0X3VVlhpiHfj8", cta: "Ready to like" },
+            { id: "li-comment-150", label: "Comment on Gainsight’s 150th celebration post.", link: "https://www.linkedin.com/posts/gainsight_internationalpodcastday-customersuccess-unchurned-activity-7379393976501559296-bae5?utm_source=share&utm_medium=member_desktop&rcm=ACoAAAM4Ch0BTWRFkZJF5IFaaE0X3VVlhpiHfj8", cta: "Let's do it" },
+            { id: "li-reshare-150", label: "Reshare Gainsight’s 150th celebration post.", link: "https://www.linkedin.com/posts/gainsight_internationalpodcastday-customersuccess-unchurned-activity-7379393976501559296-bae5?utm_source=share&utm_medium=member_desktop&rcm=ACoAAAM4Ch0BTWRFkZJF5IFaaE0X3VVlhpiHfj8", cta: "Share with flair" },
+            { id: "li-like-video", label: "Like Gainsight’s video post.", link: "https://www.linkedin.com/feed/update/urn:li:activity:7378912427490467840", cta: "Easy one" },
+            { id: "li-comment-video", label: "Comment on Gainsight’s video post.", link: "https://www.linkedin.com/feed/update/urn:li:activity:7378912427490467840", cta: "Jump in" },
+            { id: "li-reshare-video", label: "Reshare Gainsight’s video post.", link: "https://www.linkedin.com/feed/update/urn:li:activity:7378912427490467840", cta: "Let's boost it" },
+            { id: "li-follow-josh", label: "Follow our host Josh on LinkedIn.", link: "https://www.linkedin.com/in/jschachter/", cta: "Connect time" },
+            { id: "li-like-chuck", label: "Like the Chuck and Brett episode post.", link: "https://www.linkedin.com/company/gainsight/posts/?feedView=all&viewAsMember=true", cta: "Drop a reaction" },
+            { id: "li-comment-chuck", label: "Comment on the Chuck and Brett episode post.", link: "https://www.linkedin.com/company/gainsight/posts/?feedView=all&viewAsMember=true", cta: "Typin' time" },
+            { id: "li-reshare-chuck", label: "Reshare Gainsight’s video post.", link: "https://www.linkedin.com/company/gainsight/posts/?feedView=all&viewAsMember=true", cta: "Sharing is caring" }
+          ]
+        },
+        {
+          id: "youtube",
+          name: "YouTube",
+          emoji: "📺",
+          tasks: [
+            { id: "yt-subscribe", label: "Subscribe to the channel.", link: "https://www.youtube.com/gainsight?sub_confirmation=1", cta: "Let's gooooo" },
+            { id: "yt-save-playlist", label: "Save the playlist to your library.", link: "https://www.youtube.com/watch?v=zOQJ10z5YNc&list=PLB2Z_xLbXPiAljI3l105ms-XJQgZAiCdc", cta: "Hint: click 3 dots" },
+            { id: "yt-like-latest", label: "Like our most recent episode.", link: "https://youtu.be/zOQJ10z5YNc?si=XPd3dbc0UKmwaXpV", cta: "Likes are flowing" },
+            { id: "yt-comment-latest", label: "Comment on our most recent episode.", link: "https://youtu.be/zOQJ10z5YNc?si=XPd3dbc0UKmwaXpV", cta: "Hype on the way" },
+            { id: "yt-share-latest", label: "Share our most recent episode.", link: "https://youtu.be/zOQJ10z5YNc?si=XPd3dbc0UKmwaXpV", cta: "Ready for it" },
+            { id: "yt-save-watchlater", label: "Save the latest episode to Watch Later.", link: "https://www.youtube.com/watch?v=kBnpTySL8dM&list=PLB2Z_xLbXPiAljI3l105ms-XJQgZAiCdc&index=2", cta: "Cue up my queue" },
+            { id: "yt-like-another", label: "Like another episode, dealer’s choice!", link: "https://www.youtube.com/watch?v=xWRPRJcxQKM&list=PLB2Z_xLbXPiAljI3l105ms-XJQgZAiCdc&index=4", cta: "Find one (or more!)" },
+            { id: "yt-comment-another", label: "Comment on another episode, dealer’s choice!", link: "https://www.youtube.com/watch?v=OhkuMI19niQ&list=PLB2Z_xLbXPiAljI3l105ms-XJQgZAiCdc&index=5", cta: "More hype to give" },
+            { id: "yt-share-another", label: "Share another episode, dealer’s choice!", link: "https://www.youtube.com/watch?v=5h4c3rRakKI&list=PLB2Z_xLbXPiAljI3l105ms-XJQgZAiCdc&index=6", cta: "Pick and share" },
+            { id: "yt-save-another", label: "Save another episode to Watch Later.", link: "https://www.youtube.com/watch?v=zJ_nRDcv7zM&list=PLB2Z_xLbXPiAljI3l105ms-XJQgZAiCdc&index=3", cta: "Let's save one" }
+          ]
+        },
+        {
+          id: "spotify",
+          name: "Spotify",
+          emoji: "🎧",
+          tasks: [
+            { id: "sp-follow", label: "Follow the podcast.", link: "https://open.spotify.com/show/7trN4hMpLdFrQDBzDKs7w2", cta: "Of course" },
+            { id: "sp-listen", label: "Listen to 2 mins of an ep so you can leave a rating.", link: "https://open.spotify.com/episode/2pH4GYqkdGFRZ8eWQ8GAhj", cta: "Timer starts now" },
+            { id: "sp-rate", label: "Rate (5 stars only, obviously).", link: "https://open.spotify.com/show/7trN4hMpLdFrQDBzDKs7w2", cta: "5/5 stars!" },
+            { id: "sp-add", label: "Add an episode to your playlist or queue.", link: "https://open.spotify.com/show/7trN4hMpLdFrQDBzDKs7w2", cta: "Adding now" },
+            { id: "sp-share", label: "Share an episode anywhere you like.", link: "https://open.spotify.com/show/7trN4hMpLdFrQDBzDKs7w2", cta: "Share, for sure" }
+          ]
+        },
+        {
+          id: "apple",
+          name: "Apple Podcasts",
+          emoji: "🍎",
+          tasks: [
+            { id: "ap-follow", label: "Follow the podcast.", link: "https://podcasts.apple.com/us/podcast/un-churned-the-no-1-podcast-for-customer-retention/id1635997357", cta: "Yessss, happy to" },
+            { id: "ap-rate", label: "Rate (5 stars only).", link: "https://podcasts.apple.com/us/podcast/un-churned-the-no-1-podcast-for-customer-retention/id1635997357", cta: "All the stars" },
+            { id: "ap-review", label: "Write a review!", link: "https://podcasts.apple.com/us/podcast/un-churned-the-no-1-podcast-for-customer-retention/id1635997357", cta: "Shakespeare time" },
+            { id: "ap-share", label: "Share an episode.", link: "https://podcasts.apple.com/us/podcast/is-agentic-ai-the-end-of-arr-ft-brett-queener/id1635997357?i=1000729534065", cta: "Share-bear" }
+          ]
+        },
+        {
+          id: "amazon",
+          name: "Amazon Music/Audible",
+          emoji: "📚",
+          tasks: [
+            { id: "am-follow", label: "Follow the podcast (if you can).", link: "https://music.amazon.com/podcasts/cdd4fd54-77e1-487d-b502-7717fa238c25/un-churned-%E2%80%93-the-no-1-podcast-for-customer-retention", cta: "Let's try it" },
+            { id: "am-rate", label: "Rate and (if it asks) leave a review.", link: "https://music.amazon.com/podcasts/cdd4fd54-77e1-487d-b502-7717fa238c25/un-churned-%E2%80%93-the-no-1-podcast-for-customer-retention", cta: "Perfect score" },
+            { id: "am-share", label: "Share an episode.", link: "https://music.amazon.com/podcasts/cdd4fd54-77e1-487d-b502-7717fa238c25/episodes/2e144073-6894-4a48-9a79-290dc51ae98e/un-churned-%E2%80%93-the-no-1-podcast-for-customer-retention-is-agentic-ai-the-end-of-arr-ft-brett-queener-bonfire-ventures-chuck-ganapathi-gainsight", cta: "Got it, on it" }
+          ]
+        },
+        {
+          id: "instagram",
+          name: "Instagram",
+          emoji: "📸",
+          tasks: [
+            { id: "ig-follow", label: "Follow @gainsight on Instagram.", link: "https://www.instagram.com/gainsight/reels/", cta: "It's fun to follow" },
+            { id: "ig-like-150", label: "Like Gainsight’s 150th celebration post.", link: "https://www.instagram.com/p/DPTFfQ-jm8t/?igsh=NTc4MTIwNjQ2YQ==", cta: "Ready to like" },
+            { id: "ig-comment-150", label: "Comment on Gainsight’s 150th celebration post.", link: "https://www.instagram.com/p/DPTFfQ-jm8t/?igsh=NTc4MTIwNjQ2YQ==", cta: "Let's do it" },
+            { id: "ig-share-150", label: "Share to your story – Gainsight’s 150th celebration post.", link: "https://www.instagram.com/p/DPTFfQ-jm8t/?igsh=NTc4MTIwNjQ2YQ==", cta: "Share with flair" },
+            { id: "ig-like-video", label: "Like Gainsight’s video post.", link: "https://www.instagram.com/reel/DPS0jm8DhC5/?igsh=NTc4MTIwNjQ2YQ==", cta: "Easy one" },
+            { id: "ig-comment-video", label: "Comment on Gainsight’s video post.", link: "https://www.instagram.com/reel/DPS0jm8DhC5/?igsh=NTc4MTIwNjQ2YQ==", cta: "Jump in" },
+            { id: "ig-share-video", label: "Share to your story – Gainsight’s video post.", link: "https://www.instagram.com/reel/DPS0jm8DhC5/?igsh=NTc4MTIwNjQ2YQ==", cta: "Let's boost it" },
+            { id: "ig-bonus-spotify", label: "Bonus! On Spotify, share an episode to your IG story.", link: "https://open.spotify.com/episode/2pH4GYqkdGFRZ8eWQ8GAhj", cta: "Get that bonus" }
+          ]
+        }
+      ];
+
+
+      const prefersReducedMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+      const state = {
+        user: {
+          name: "",
+          email: "",
+          username: ""
+        },
+        completedTaskIds: new Set(),
+        score: 0,
+        completedBuckets: 0,
+        leaderboard: [...leaderboardTemplate]
+      };
+
+      const elements = {
+        bucketImage: document.getElementById("bucketImage"),
+        scoreDisplay: document.getElementById("scoreDisplay"),
+        bucketDisplay: document.getElementById("bucketDisplay"),
+        checklistCard: document.getElementById("checklistCard"),
+        leaderboardGrid: document.getElementById("leaderboardGrid"),
+        ohNoMessage: document.getElementById("ohNoMessage"),
+        screenNameLabel: document.getElementById("screenNameLabel"),
+        honorNameLabel: document.getElementById("honorNameLabel"),
+        confettiCanvas: document.getElementById("confettiCanvas")
+      };
+
+      let tasksUpdateTimer = null;
+      let fallbackTimer = null;
+
+      async function upsertPlayer(payload) {
+        try {
+          const { error } = await supabase
+            .from('players')
+            .upsert(payload, { onConflict: 'username' });
+          if (error) {
+            console.error('[Un]Churned :: Supabase upsert failed', error);
+          }
+        } catch (error) {
+          console.error('[Un]Churned :: Supabase request error', error);
+        }
+      }
+
+      function getCompletedTasksArray() {
+        return Array.from(state.completedTaskIds);
+      }
+
+      async function syncPlayer({ immediate = false } = {}) {
+        if (!state.user.username) return;
+        scheduleOneHourBump();
+
+        const execute = async () => {
+          const tasksSnapshot = getCompletedTasksArray();
+          await upsertPlayer({
+            timestamp: new Date().toISOString(),
+            name: state.user.name,
+            email: state.user.email,
+            username: state.user.username,
+            score: state.score,
+            completed_tasks_json: tasksSnapshot,
+            total_task_count: tasksSnapshot.length
+          });
+        };
+
+        if (immediate) {
+          clearTimeout(tasksUpdateTimer);
+          await execute();
+          return;
+        }
+
+        clearTimeout(tasksUpdateTimer);
+        tasksUpdateTimer = setTimeout(execute, 500);
+      }
+
+      function scheduleOneHourBump() {
+        if (!state.user.username || fallbackTimer) return;
+        fallbackTimer = setTimeout(async () => {
+          const tasksSnapshot = getCompletedTasksArray();
+          await upsertPlayer({
+            timestamp: new Date().toISOString(),
+            name: state.user.name,
+            email: state.user.email,
+            username: state.user.username,
+            score: state.score,
+            completed_tasks_json: tasksSnapshot,
+            total_task_count: tasksSnapshot.length
+          });
+          fallbackTimer = null;
+          scheduleOneHourBump();
+        }, 60 * 60 * 1000);
+      }
+
+      elements.bucketImage.dataset.currentSrc = elements.bucketImage.getAttribute("src") || bucketFrames[0];
+
+      const confettiCtx = elements.confettiCanvas && elements.confettiCanvas.getContext
+        ? elements.confettiCanvas.getContext("2d")
+        : null;
+
+      if (confettiCtx) {
+        resizeCanvas();
+        window.addEventListener("resize", resizeCanvas);
+      }
+
+      let bucketResetTimer = null;
+
+      initFromStorage();
+      hydrateChecklist();
+      restoreTaskSelections();
+      updateBucketProgress();
+      renderLeaderboard();
+      syncPlayer({ immediate: true });
+      scheduleOneHourBump();
+      function hydrateChecklist() {
+        if (elements.checklistCard.querySelector('.platform-section')) return;
+        platformTasks.forEach((platform) => {
+          const section = document.createElement("section");
+          section.className = "platform-section";
+
+          const headerButton = document.createElement("button");
+          headerButton.type = "button";
+          headerButton.className = "platform-header";
+          headerButton.setAttribute("aria-expanded", "true");
+          headerButton.dataset.platformId = platform.id;
+
+          const title = document.createElement("h3");
+          title.innerHTML = `${platform.emoji} ${platform.name}`;
+
+          headerButton.appendChild(title);
+
+          const taskList = document.createElement("div");
+          taskList.className = "task-list";
+          taskList.id = `tasks-${platform.id}`;
+
+          platform.tasks.forEach((task) => {
+            const taskId = `${platform.id}-${task.id}`;
+            const taskItem = document.createElement("div");
+            taskItem.className = "task-item";
+            taskItem.dataset.taskId = taskId;
+
+            const label = document.createElement("label");
+            label.setAttribute("for", taskId);
+
+            const checkboxWrapper = document.createElement("span");
+            checkboxWrapper.className = "custom-checkbox";
+
+            const checkbox = document.createElement("input");
+            checkbox.type = "checkbox";
+            checkbox.id = taskId;
+            checkbox.dataset.taskId = taskId;
+            checkbox.setAttribute("aria-label", task.label);
+
+            checkbox.addEventListener("change", handleTaskToggle);
+
+            const description = document.createElement("span");
+            if (task.link) {
+              const link = document.createElement("a");
+              link.href = task.link;
+              link.target = "_blank";
+              link.rel = "noopener noreferrer";
+              link.textContent = `${task.cta || "Take action"}  →`;
+              description.textContent = `${task.label} `;
+              description.appendChild(link);
+            } else {
+              description.textContent = task.label;
+            }
+
+            checkboxWrapper.appendChild(checkbox);
+            label.appendChild(checkboxWrapper);
+            label.appendChild(description);
+            taskItem.appendChild(label);
+            taskList.appendChild(taskItem);
+          });
+
+          headerButton.addEventListener("click", () => toggleTaskList(taskList, headerButton));
+          headerButton.addEventListener("keydown", (event) => {
+            if (event.key === "Enter" || event.key === " ") {
+              event.preventDefault();
+              toggleTaskList(taskList, headerButton);
+            }
+          });
+
+          section.appendChild(headerButton);
+          section.appendChild(taskList);
+          elements.checklistCard.appendChild(section);
+        });
+      }
+
+      function toggleTaskList(taskList, headerButton) {
+        const expanded = headerButton.getAttribute("aria-expanded") === "true";
+        headerButton.setAttribute("aria-expanded", String(!expanded));
+        taskList.style.display = expanded ? "none" : "flex";
+      }
+
+      function handleTaskToggle(event) {
+        const checkbox = event.target;
+        const taskId = checkbox.dataset.taskId;
+        const taskItem = checkbox.closest(".task-item");
+
+        if (checkbox.checked) {
+          state.completedTaskIds.add(taskId);
+          taskItem.classList.add("completed");
+          incrementScore(10);
+        } else {
+          state.completedTaskIds.delete(taskId);
+          taskItem.classList.remove("completed");
+          adjustScore(-10);
+        }
+
+        updateBucketProgress({ isCheck: checkbox.checked });
+        syncPlayer();
+      }
+
+      function updateBucketProgress(options = {}) {
+        const { isCheck = false } = options;
+        const completedCount = state.completedTaskIds.size;
+        const cycleLength = Math.max(bucketFrames.length - 1, 1);
+        let frameIndex = 0;
+
+        if (completedCount !== 0 && cycleLength > 0) {
+          frameIndex = ((completedCount - 1) % cycleLength) + 1;
+        }
+
+        setBucketFrame(frameIndex);
+
+        if (bucketResetTimer) {
+          clearTimeout(bucketResetTimer);
+          bucketResetTimer = null;
+        }
+
+        const milestoneReached = isCheck && cycleLength > 0 && completedCount > 0 && (completedCount % cycleLength === 0);
+        if (milestoneReached) {
+          launchConfetti();
+          bucketResetTimer = setTimeout(() => {
+            setBucketFrame(0);
+            bucketResetTimer = null;
+          }, 300);
+        }
+
+        const bucketsCompleted = Math.floor(completedCount / 5);
+        const prevBuckets = state.completedBuckets;
+        if (bucketsCompleted > state.completedBuckets) {
+          const diff = bucketsCompleted - state.completedBuckets;
+          state.completedBuckets = bucketsCompleted;
+          incrementScore(50 * diff);
+        } else if (bucketsCompleted < state.completedBuckets) {
+          const diff = state.completedBuckets - bucketsCompleted;
+          state.completedBuckets = bucketsCompleted;
+          adjustScore(-50 * diff);
+        } else {
+          updateScoreDisplays();
+          persistState();
+          if (prevBuckets === bucketsCompleted) {
+            syncPlayer();
+          }
+          return;
+        }
+
+        persistState();
+        syncPlayer();
+      }
+
+      function launchConfetti() {
+        if (!confettiCtx || prefersReducedMotion) return;
+
+        const duration = 4000;
+        const particles = [];
+        const colors = ["#153D5E", "#22649F", "#38A2FF", "#D8C5EF", "#F75D4F", "#FCBEB9", "#88C7FF"];
+        const startTime = performance.now();
+
+        for (let i = 0; i < 100; i += 1) {
+          particles.push({
+            x: Math.random() * elements.confettiCanvas.width,
+            y: -20,
+            size: Math.random() * 8 + 4,
+            angle: Math.random() * Math.PI,
+            velocityX: Math.random() * 2 - 1,
+            velocityY: Math.random() * 2 + 3,
+            color: colors[Math.floor(Math.random() * colors.length)]
+          });
+        }
+
+        function drawConfetti(now) {
+          const elapsed = now - startTime;
+          if (elapsed > duration) {
+            confettiCtx.clearRect(0, 0, elements.confettiCanvas.width, elements.confettiCanvas.height);
+            return;
+          }
+
+          confettiCtx.clearRect(0, 0, elements.confettiCanvas.width, elements.confettiCanvas.height);
+          particles.forEach((particle) => {
+            particle.x += particle.velocityX;
+            particle.y += particle.velocityY;
+            particle.velocityY += 0.05;
+            confettiCtx.fillStyle = particle.color;
+            confettiCtx.save();
+            confettiCtx.translate(particle.x, particle.y);
+            confettiCtx.rotate(particle.angle + elapsed / 200);
+            confettiCtx.fillRect(-particle.size / 2, -particle.size / 2, particle.size, particle.size);
+            confettiCtx.restore();
+          });
+          requestAnimationFrame(drawConfetti);
+        }
+
+        requestAnimationFrame(drawConfetti);
+      }
+
+      function resizeCanvas() {
+        elements.confettiCanvas.width = window.innerWidth;
+        elements.confettiCanvas.height = window.innerHeight;
+      }
+
+      function setBucketFrame(frameIndex) {
+        const safeIndex = Math.max(0, Math.min(frameIndex, bucketFrames.length - 1));
+        const desiredSrc = bucketFrames[safeIndex];
+        if (elements.bucketImage.dataset.currentSrc === desiredSrc) {
+          return;
+        }
+
+        const img = new Image();
+        img.onload = () => {
+          elements.bucketImage.src = desiredSrc;
+          elements.bucketImage.dataset.currentSrc = desiredSrc;
+        };
+        img.onerror = () => {
+          console.log(`[Un]Churned :: Missing bucket frame ${desiredSrc}`);
+        };
+        img.src = desiredSrc;
+      }
+
+      function incrementScore(amount) {
+        state.score += amount;
+        if (state.score < 0) state.score = 0;
+        updateScoreDisplays();
+        persistState();
+        renderLeaderboard();
+        syncPlayer();
+      }
+
+      function adjustScore(delta) {
+        state.score += delta;
+        if (state.score < 0) state.score = 0;
+        updateScoreDisplays();
+        persistState();
+        renderLeaderboard();
+        syncPlayer();
+      }
+
+      function updateScoreDisplays() {
+        elements.scoreDisplay.textContent = `Score: ${state.score} points`;
+        const bucketDisplayValue = Math.min(state.completedBuckets, 7);
+        elements.bucketDisplay.textContent = `Buckets Patched: ${bucketDisplayValue} / 7`;
+      }
+
+      function updateOhNoMessage() {
+        if (!elements.screenNameLabel) return;
+        const username = (state.user.username || '').trim();
+        const displayName = username || deriveDisplayNameFromName(state.user.name) || "Friend";
+        elements.screenNameLabel.textContent = displayName;
+        if (elements.honorNameLabel) {
+          elements.honorNameLabel.textContent = displayName;
+        }
+      }
+
+      function deriveDisplayNameFromName(rawName) {
+        if (!rawName) return "";
+        const parts = String(rawName).trim().split(/\s+/);
+        return parts[0] || "";
+      }
+
+      function renderLeaderboard() {
+        elements.leaderboardGrid.innerHTML = "";
+        const combined = [...state.leaderboard.filter((entry) => entry.username !== state.user.username)];
+        let userEntry;
+        if (state.user.username) {
+          userEntry = { username: state.user.username, score: state.score };
+          combined.push(userEntry);
+        }
+        combined.sort((a, b) => b.score - a.score);
+
+        const ranked = combined.map((entry, index) => ({ ...entry, rank: index + 1 }));
+        let displayEntries = ranked.slice(0, 16);
+
+        if (userEntry) {
+          const rankedUser = ranked.find((entry) => entry.username === state.user.username);
+          const userIsVisible = displayEntries.some((entry) => entry.username === state.user.username);
+          if (rankedUser && !userIsVisible && displayEntries.length) {
+            displayEntries[displayEntries.length - 1] = rankedUser;
+          }
+        }
+
+        const leftColumn = document.createElement("div");
+        leftColumn.className = "leaderboard-column";
+        const rightColumn = document.createElement("div");
+        rightColumn.className = "leaderboard-column";
+
+        displayEntries.forEach((entry, index) => {
+          const wrapper = document.createElement("div");
+          wrapper.className = "leaderboard-entry";
+          if (entry.rank <= 3) {
+            wrapper.classList.add("top-three");
+          }
+          if (state.user.username && entry.username === state.user.username) {
+            wrapper.classList.add("current-user");
+          }
+
+          const position = entry.rank.toString().padStart(2, "0");
+          const usernameSpan = document.createElement("span");
+          usernameSpan.textContent = `${position}. ${entry.username}`;
+
+          const dots = document.createElement("span");
+          dots.className = "leaderboard-dots";
+
+          const scoreSpan = document.createElement("span");
+          scoreSpan.textContent = `${entry.score}`;
+
+          wrapper.appendChild(usernameSpan);
+          wrapper.appendChild(dots);
+          wrapper.appendChild(scoreSpan);
+
+          if (index < 8) {
+            leftColumn.appendChild(wrapper);
+          } else {
+            rightColumn.appendChild(wrapper);
+          }
+        });
+
+        elements.leaderboardGrid.appendChild(leftColumn);
+        elements.leaderboardGrid.appendChild(rightColumn);
+      }
+
+      function initFromStorage() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (!raw) {
+            redirectToRegistration();
+            return;
+          }
+          const saved = JSON.parse(raw);
+          if (!saved || !saved.user || !saved.user.username) {
+            redirectToRegistration();
+            return;
+          }
+          state.user = { ...state.user, ...saved.user };
+          state.score = typeof saved.score === "number" ? saved.score : state.score;
+          state.completedBuckets = typeof saved.completedBuckets === "number" ? saved.completedBuckets : state.completedBuckets;
+          state.leaderboard = Array.isArray(saved.leaderboard) && saved.leaderboard.length
+            ? saved.leaderboard
+            : [...leaderboardTemplate];
+          state.completedTaskIds = new Set(saved.completedTaskIds || []);
+          updateOhNoMessage();
+        } catch (error) {
+          console.log("[Un]Churned :: State parse error", error.message);
+          redirectToRegistration();
+        }
+      }
+
+      function restoreTaskSelections() {
+        state.completedTaskIds.forEach((taskId) => {
+          const checkbox = document.getElementById(taskId);
+          if (checkbox) {
+            checkbox.checked = true;
+            checkbox.closest(".task-item").classList.add("completed");
+          }
+        });
+      }
+
+      function persistState() {
+        const payload = {
+          user: state.user,
+          completedTaskIds: Array.from(state.completedTaskIds),
+          score: state.score,
+          completedBuckets: state.completedBuckets,
+          leaderboard: state.leaderboard,
+          view: "dashboard"
+        };
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+        } catch (error) {
+          console.log("[Un]Churned :: Persist error", error.message);
+        }
+      }
+
+      function redirectToRegistration() {
+        window.location.replace("index.html");
+      }
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>[Un]Churned International Podcast Day Registration</title>
+  <style>
+    :root {
+      --deep-blue: #153d5e;
+      --deep-blue-dark: #0d2538;
+      --deep-blue-mid: #22649f;
+      --deep-blue-light: #88c7ff;
+      --deep-blue-soft: #e9f4ff;
+      --electric-blue: #38a2ff;
+      --unicorn: #d8c5ef;
+      --grape-dark: #2f3779;
+      --starfish: #f75d4f;
+      --white: #ffffff;
+      --glass-bg: rgba(255, 255, 255, 0.25);
+      --glass-border: rgba(255, 255, 255, 0.3);
+      --shadow-base: rgba(0, 0, 0, 0.1);
+      --transition-fast: 0.2s ease;
+      --max-width: 1200px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      color: var(--white);
+      background: linear-gradient(135deg, var(--deep-blue) 0%, var(--deep-blue-mid) 50%, var(--deep-blue-light) 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(21, 61, 94, 0.85), rgba(13, 37, 56, 0.95));
+      z-index: -2;
+    }
+
+    main {
+      width: 100%;
+      max-width: var(--max-width);
+      padding: 48px 20px 96px;
+      flex: 1 0 auto;
+      display: flex;
+      justify-content: center;
+    }
+
+    .registration-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 32px;
+      width: 100%;
+    }
+
+    .glass-card {
+      background: var(--glass-bg);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid var(--glass-border);
+      border-radius: 15px;
+      box-shadow: 0 8px 32px var(--shadow-base);
+    }
+
+    .registration-card {
+      width: min(640px, 100%);
+      padding: 36px;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+      text-align: center;
+    }
+
+    .brand-logo {
+      font-size: clamp(2.2rem, 4vw, 3rem);
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      margin: 0;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .brand-logo span {
+      display: inline-block;
+    }
+
+    .logo-bracket {
+      color: var(--electric-blue);
+    }
+
+    .logo-text {
+      color: var(--white);
+    }
+
+    .logo-subtitle {
+      margin: 4px 0 0;
+      font-size: 1rem;
+      color: var(--deep-blue-soft);
+    }
+
+    .tagline {
+      margin: 0;
+      font-size: 1.2rem;
+      color: var(--white);
+      text-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      text-align: left;
+    }
+
+    label {
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .input-field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    input[type="text"],
+    input[type="email"] {
+      padding: 14px 16px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      background: rgba(13, 37, 56, 0.7);
+      color: var(--white);
+      font-size: 1rem;
+      transition: border var(--transition-fast), box-shadow var(--transition-fast);
+    }
+
+    input[type="text"]:focus,
+    input[type="email"]:focus {
+      outline: none;
+      border-color: var(--electric-blue);
+      box-shadow: 0 0 0 3px rgba(56, 162, 255, 0.25);
+    }
+
+    .error-message {
+      color: var(--grape-dark);
+      font-weight: 700;
+      font-size: 0.9rem;
+      min-height: 1.2em;
+    }
+
+    .username-section {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      align-items: stretch;
+    }
+
+    .username-options {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 12px;
+    }
+
+    .username-option {
+      padding: 12px 16px;
+      border-radius: 12px;
+      border: 2px solid transparent;
+      cursor: pointer;
+      background: rgba(14, 36, 56, 0.6);
+      color: var(--white);
+      font-family: "Courier New", Courier, monospace;
+      font-size: 1rem;
+      position: relative;
+      transition: transform var(--transition-fast), border var(--transition-fast), box-shadow var(--transition-fast);
+      text-align: center;
+    }
+
+    .username-option:hover,
+    .username-option:focus {
+      border-color: var(--electric-blue);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(56, 162, 255, 0.3);
+      outline: none;
+    }
+
+    .username-option.selected {
+      border-color: var(--electric-blue);
+      box-shadow: 0 0 18px rgba(56, 162, 255, 0.45);
+      background: rgba(56, 162, 255, 0.2);
+    }
+
+    .button {
+      padding: 15px 40px;
+      border: none;
+      border-radius: 30px;
+      background: linear-gradient(135deg, var(--electric-blue), var(--deep-blue-light));
+      color: var(--white);
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+      box-shadow: 0 8px 20px rgba(56, 162, 255, 0.35);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      text-decoration: none;
+    }
+
+    .button:hover,
+    .button:focus {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 24px rgba(56, 162, 255, 0.5);
+      outline: none;
+    }
+
+    .button.secondary {
+      background: linear-gradient(135deg, rgba(216, 197, 239, 0.8), rgba(78, 91, 202, 0.9));
+      box-shadow: 0 8px 20px rgba(78, 91, 202, 0.35);
+    }
+
+    .submit-button {
+      margin-top: 12px;
+      align-self: center;
+      display: none;
+    }
+
+    .submit-button.visible {
+      display: inline-flex;
+    }
+
+    .footer {
+      margin-top: auto;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      padding: 24px 16px 48px;
+    }
+
+    .footer-content {
+      width: min(var(--max-width), 100%);
+      padding: 18px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      text-align: center;
+      color: var(--white);
+      font-size: 0.95rem;
+    }
+
+    /* Confetti Canvas */
+    #confettiCanvas {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 50;
+    }
+
+    @media (max-width: 768px) {
+      main {
+        padding: 32px 16px 80px;
+      }
+
+      .registration-card {
+        padding: 28px;
+      }
+
+      .tagline {
+        font-size: 1.05rem;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="confettiCanvas" aria-hidden="true"></canvas>
+  <main>
+    <section class="registration-wrapper">
+      <div class="registration-card glass-card" role="region" aria-labelledby="registrationHeading">
+        <header>
+          <h1 id="registrationHeading" class="brand-logo" aria-label="Unchurned">
+            <span class="logo-bracket">[Un]</span><span class="logo-text">Churned</span>
+          </h1>
+          <p class="logo-subtitle">Podcast</p>
+          <p class="tagline">International Podcast Day Celebration 🎉</p>
+        </header>
+
+        <form id="registrationForm" novalidate>
+          <div class="input-field">
+            <label for="nameInput">Name</label>
+            <input id="nameInput" name="name" type="text" autocomplete="name" required aria-required="true" />
+            <div id="nameError" class="error-message" role="alert" aria-live="polite"></div>
+          </div>
+          <div class="input-field">
+            <label for="emailInput">Email</label>
+            <input id="emailInput" name="email" type="email" autocomplete="email" required aria-required="true" />
+            <div id="emailError" class="error-message" role="alert" aria-live="polite"></div>
+          </div>
+
+          <div class="username-section" aria-live="polite">
+            <h2 class="tagline" style="font-size:1.1rem;">Get Your [Un]Screen Name 📟</h2>
+            <button type="button" id="usernameButton" class="button secondary">[Un]Lock My Options 🔓</button>
+            <div id="usernameOptions" class="username-options" role="listbox" aria-label="Username choices"></div>
+          </div>
+
+          <button type="submit" id="submitButton" class="button submit-button">Let's Get [Un]Real with Promotion 💥</button>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-content glass-card">
+      <span>Built with 💗 by the [Un]Churned team at Gainsight</span>
+      <span>Because every retention enthusiast deserves a weekly dose of churn escapism ✨</span>
+    </div>
+  </footer>
+
+  <script type="module">
+    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+    const supabase = createClient(
+      'https://zxjclmnxjavejrhfkuuj.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp4amNsbW54amF2ZWpyaGZrdXVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkzODQ0MzIsImV4cCI6MjA3NDk2MDQzMn0.EdNZQOYypn1ZrH6iT15usXCruwkMFuCNu6n-dUDpALE'
+    );
+
+    (function () {
+      const STORAGE_KEY = "unchurnedGameState";
+      const prefersReducedMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+      const leaderboardTemplate = [
+        { username: "CyberNova135", score: 135 },
+        { username: "Pixel_Pal130", score: 130 },
+        { username: "DialUpHero128", score: 128 },
+        { username: "GlitchQueen122", score: 122 },
+        { username: "MixaFixa118", score: 118 },
+        { username: "ChatBuzz116", score: 116 },
+        { username: "LaserTag110", score: 110 },
+        { username: "BetaBeats108", score: 108 },
+        { username: "FrostWire104", score: 104 },
+        { username: "PagerParty102", score: 102 },
+        { username: "ArcadeAce100", score: 100 },
+        { username: "NetNinja95", score: 95 },
+        { username: "PixelPenguin92", score: 92 },
+        { username: "DialDream88", score: 88 },
+        { username: "MixtapeMagic84", score: 84 },
+        { username: "LaserLuv78", score: 78 },
+        { username: "WaveFile72", score: 72 },
+        { username: "JukeBox50", score: 50 }
+      ];
+
+      const state = {
+        user: {
+          name: "",
+          email: "",
+          username: ""
+        }
+      };
+
+      const elements = {
+        registrationForm: document.getElementById("registrationForm"),
+        nameInput: document.getElementById("nameInput"),
+        emailInput: document.getElementById("emailInput"),
+        nameError: document.getElementById("nameError"),
+        emailError: document.getElementById("emailError"),
+        usernameButton: document.getElementById("usernameButton"),
+        usernameOptions: document.getElementById("usernameOptions"),
+        submitButton: document.getElementById("submitButton"),
+        confettiCanvas: document.getElementById("confettiCanvas")
+      };
+
+      async function upsertPlayer(payload) {
+        try {
+          const { error } = await supabase
+            .from('players')
+            .upsert(payload, { onConflict: 'username' });
+          if (error) {
+            console.error('[Un]Churned :: Supabase upsert failed', error);
+          }
+        } catch (error) {
+          console.error('[Un]Churned :: Supabase request error', error);
+        }
+      }
+
+      async function onChooseUsername({ name, email, username }) {
+        await upsertPlayer({
+          timestamp: new Date().toISOString(),
+          name,
+          email,
+          username,
+          score: 0,
+          completed_tasks_json: [],
+          total_task_count: 0
+        });
+      }
+
+      const ctx = elements.confettiCanvas.getContext ? elements.confettiCanvas.getContext("2d") : null;
+      if (ctx) {
+        resizeCanvas();
+        window.addEventListener("resize", resizeCanvas);
+      }
+
+      initFromStorage();
+      attachEventListeners();
+
+      function attachEventListeners() {
+        elements.usernameButton.addEventListener("click", handleUsernameGenerate);
+        elements.usernameOptions.addEventListener("click", handleUsernameSelect);
+        elements.usernameOptions.addEventListener("keydown", handleUsernameKeyNavigation);
+        elements.registrationForm.addEventListener("submit", handleRegistrationSubmit);
+      }
+
+      function handleUsernameGenerate() {
+        const name = elements.nameInput.value.trim();
+        const email = elements.emailInput.value.trim();
+
+        validateField("name");
+        validateField("email");
+
+        const options = generateUsernames(name || state.user.name, email || state.user.email);
+        elements.usernameOptions.innerHTML = "";
+        options.forEach((username, index) => {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = "username-option";
+          button.textContent = username;
+          button.setAttribute("role", "option");
+          button.setAttribute("aria-selected", "false");
+          button.dataset.username = username;
+          button.tabIndex = 0;
+          elements.usernameOptions.appendChild(button);
+          if (index === 0) {
+            button.focus();
+          }
+        });
+
+        elements.usernameButton.dataset.generated = "true";
+        elements.usernameButton.textContent = "Roll [Un]other Time 🎲";
+      }
+
+      function handleUsernameSelect(event) {
+        const target = event.target.closest(".username-option");
+        if (!target) return;
+        Array.from(elements.usernameOptions.children).forEach((option) => {
+          option.classList.remove("selected");
+          option.setAttribute("aria-selected", "false");
+        });
+        target.classList.add("selected");
+        target.setAttribute("aria-selected", "true");
+        const username = target.dataset.username;
+        state.user.username = username;
+        elements.submitButton.classList.add("visible");
+        launchConfetti();
+      }
+
+      function handleUsernameKeyNavigation(event) {
+        const options = Array.from(elements.usernameOptions.querySelectorAll(".username-option"));
+        if (!options.length) return;
+        const currentIndex = options.indexOf(document.activeElement);
+        let nextIndex = -1;
+
+        switch (event.key) {
+          case "ArrowRight":
+          case "ArrowDown":
+            nextIndex = (currentIndex + 1) % options.length;
+            event.preventDefault();
+            options[nextIndex].focus();
+            break;
+          case "ArrowLeft":
+          case "ArrowUp":
+            nextIndex = (currentIndex - 1 + options.length) % options.length;
+            event.preventDefault();
+            options[nextIndex].focus();
+            break;
+          case "Enter":
+          case " ":
+            if (document.activeElement.classList.contains("username-option")) {
+              document.activeElement.click();
+            }
+            break;
+          default:
+            break;
+        }
+      }
+
+      async function handleRegistrationSubmit(event) {
+        event.preventDefault();
+        const nameValid = validateField("name");
+        const emailValid = validateField("email");
+        const usernameValid = Boolean(state.user.username);
+
+        if (!usernameValid) {
+          elements.usernameOptions.setAttribute("aria-invalid", "true");
+        } else {
+          elements.usernameOptions.removeAttribute("aria-invalid");
+        }
+
+        if (!nameValid || !emailValid || !usernameValid) {
+          return;
+        }
+
+        state.user.name = elements.nameInput.value.trim();
+        state.user.email = elements.emailInput.value.trim();
+        persistState({
+          user: state.user,
+          completedTaskIds: [],
+          score: 0,
+          completedBuckets: 0,
+          leaderboard: leaderboardTemplate.map((entry) => ({ ...entry })),
+          view: "dashboard"
+        });
+
+        await onChooseUsername({
+          name: state.user.name,
+          email: state.user.email,
+          username: state.user.username
+        });
+
+        setTimeout(() => {
+          window.location.href = "dashboard.html";
+        }, 200);
+      }
+
+      function validateField(field) {
+        if (field === "name") {
+          const value = elements.nameInput.value.trim();
+          if (!value) {
+            elements.nameError.textContent = "Wait a sec, [Un]known Stranger 👀 Name plz.";
+            return false;
+          }
+          elements.nameError.textContent = "";
+          return true;
+        }
+
+        if (field === "email") {
+          const value = elements.emailInput.value.trim();
+          const valid = /^\S+@\S+\.\S+$/.test(value);
+          if (!value) {
+            elements.emailError.textContent = "Not so fast, [Un]traceable Friend 🕵️ Give us your email.";
+            return false;
+          }
+          if (!valid) {
+            elements.emailError.textContent = "Not so fast, [Un]traceable Friend 🕵️ Give us your email.";
+            return false;
+          }
+          elements.emailError.textContent = "";
+          return true;
+        }
+        return true;
+      }
+
+      function generateUsernames(name, email) {
+        const baseName = deriveNameFragment(name, email);
+        const adjectives = [
+          "Cyber", "Pixel", "Retro", "Flux", "Mega", "Neon", "Analog", "Echo", "Vibe", "Wave", "Laser", "Sonic", "Turbo", "Chill", "Phantom", "Matrix", "Nova",
+          "Rhythm", "Arcade", "Alpha", "Giga", "Cloud", "Zen", "Modem", "Beta", "Cosmic", "Micro", "Hyper", "Quantum"
+        ];
+        const suffixes = [
+          "Kid", "Guru", "Master", "Wizard", "Star", "Hero", "Pilot", "DJ", "Ninja", "Queen", "King", "Ace", "Rider", "Runner", "Spark", "Dance", "Wave", "Glow",
+          "Frenzy", "Dream", "Pulse", "Boombox", "Mix", "Loop", "Glitch", "Jam", "Rush", "Stereo", "Cruise", "Voltage"
+        ];
+        const numbers = ["88", "90", "91", "92", "93", "94", "95", "96", "97", "98", "99", "2000", "2001", "2002", "3000", "404", "777"];
+
+        const results = new Set();
+        while (results.size < 3) {
+          const adjective = adjectives[Math.floor(Math.random() * adjectives.length)];
+          const suffix = suffixes[Math.floor(Math.random() * suffixes.length)];
+          const number = numbers[Math.floor(Math.random() * numbers.length)];
+          const glueOptions = ["-", "_", ".", "", "X"];
+          const glue = glueOptions[Math.floor(Math.random() * glueOptions.length)];
+          const patternOptions = [
+            `${adjective}${glue}${baseName}${number}`,
+            `${baseName}${glue}${suffix}${number}`,
+            `${adjective}${baseName}${number}`,
+            `${baseName}${glue}${number}`,
+            `${baseName}${suffix}${number}`,
+            `${adjective}${glue}${baseName}${suffix}`
+          ];
+          const pick = patternOptions[Math.floor(Math.random() * patternOptions.length)];
+          results.add(pick);
+        }
+        return Array.from(results);
+      }
+
+      function deriveNameFragment(name, email) {
+        if (name) {
+          const parts = name.split(/\s+/).filter(Boolean);
+          if (parts.length === 1) {
+            return sanitizeName(parts[0]);
+          }
+          const choice = parts[Math.floor(Math.random() * parts.length)];
+          return sanitizeName(choice);
+        }
+        if (email) {
+          const [localPart] = email.split("@");
+          return sanitizeName(localPart);
+        }
+        return "PodPal";
+      }
+
+      function sanitizeName(str) {
+        return str.replace(/[^a-zA-Z0-9]/g, "").slice(0, 10) || "PodPal";
+      }
+
+      function launchConfetti() {
+        if (!ctx || prefersReducedMotion) return;
+        const duration = 4000;
+        const particles = [];
+        const colors = ["#153D5E", "#22649F", "#38A2FF", "#D8C5EF", "#F75D4F", "#FCBEB9", "#88C7FF"];
+        const startTime = performance.now();
+
+        for (let i = 0; i < 100; i += 1) {
+          particles.push({
+            x: Math.random() * elements.confettiCanvas.width,
+            y: -20,
+            size: Math.random() * 8 + 4,
+            angle: Math.random() * Math.PI,
+            velocityX: Math.random() * 2 - 1,
+            velocityY: Math.random() * 2 + 3,
+            color: colors[Math.floor(Math.random() * colors.length)]
+          });
+        }
+
+        function drawConfetti(now) {
+          const elapsed = now - startTime;
+          if (elapsed > duration) {
+            ctx.clearRect(0, 0, elements.confettiCanvas.width, elements.confettiCanvas.height);
+            return;
+          }
+
+          ctx.clearRect(0, 0, elements.confettiCanvas.width, elements.confettiCanvas.height);
+          particles.forEach((particle) => {
+            particle.x += particle.velocityX;
+            particle.y += particle.velocityY;
+            particle.velocityY += 0.05;
+            ctx.fillStyle = particle.color;
+            ctx.save();
+            ctx.translate(particle.x, particle.y);
+            ctx.rotate(particle.angle + elapsed / 200);
+            ctx.fillRect(-particle.size / 2, -particle.size / 2, particle.size, particle.size);
+            ctx.restore();
+          });
+          requestAnimationFrame(drawConfetti);
+        }
+
+        requestAnimationFrame(drawConfetti);
+      }
+
+      function resizeCanvas() {
+        elements.confettiCanvas.width = window.innerWidth;
+        elements.confettiCanvas.height = window.innerHeight;
+      }
+
+      function initFromStorage() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (!raw) return;
+          const saved = JSON.parse(raw);
+          if (saved.user) {
+            state.user = { ...state.user, ...saved.user };
+            elements.nameInput.value = state.user.name;
+            elements.emailInput.value = state.user.email;
+          }
+          if (state.user.username) {
+            elements.usernameButton.dataset.generated = "true";
+            elements.usernameButton.textContent = "Roll [Un]other Time 🎲";
+            renderSelectedUsername(state.user.username);
+            elements.submitButton.classList.add("visible");
+          }
+          if (saved.view === "dashboard" && state.user.username) {
+            window.location.replace("dashboard.html");
+          }
+        } catch (error) {
+          console.log("[Un]Churned :: State parse error", error.message);
+        }
+      }
+
+      function renderSelectedUsername(username) {
+        elements.usernameOptions.innerHTML = "";
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "username-option selected";
+        button.dataset.username = username;
+        button.textContent = username;
+        button.setAttribute("role", "option");
+        button.setAttribute("aria-selected", "true");
+        button.tabIndex = 0;
+        elements.usernameOptions.appendChild(button);
+      }
+
+      function persistState(payload) {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+        } catch (error) {
+          console.log("[Un]Churned :: Persist error", error.message);
+        }
+      }
+    })();
+  </script>
+</body>
+</html>
