@@ -338,12 +338,62 @@
   </footer>
 
   <script type="module">
-    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+    const API = "/api/players";
+    async function postToAPI(payload) {
+      const resp = await fetch(API, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const data = await resp.json().catch(() => ({}));
+      console.log("API status:", resp.status, data);
+      return { resp, data };
+    }
 
-    const supabase = createClient(
-      'https://zxjclmnxjavejrhfkuuj.supabase.co',
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp4amNsbW54amF2ZWpyaGZrdXVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkzODQ0MzIsImV4cCI6MjA3NDk2MDQzMn0.EdNZQOYypn1ZrH6iT15usXCruwkMFuCNu6n-dUDpALE'
-    );
+    // Save a new player when they register
+    async function onChooseUsername({ name, email, username }) {
+      const payload = {
+        timestamp: new Date().toISOString(),
+        name,
+        email,
+        username,
+        score: 0,
+        completed_tasks_json: [],
+        total_task_count: 0,
+      };
+      await postToAPI(payload);
+    }
+
+    // Update tasks (debounced so it doesn’t spam writes)
+    let updateTimer;
+    function onTasksChanged({ username, tasks, score }) {
+      clearTimeout(updateTimer);
+      updateTimer = setTimeout(async () => {
+        const payload = {
+          timestamp: new Date().toISOString(),
+          username,
+          score,
+          completed_tasks_json: tasks,
+          total_task_count: tasks.filter((t) => !t.bonus).length,
+        };
+        await postToAPI(payload);
+      }, 500);
+    }
+
+    // Fallback update after 60 minutes
+    function scheduleOneHourBump({ username, getCurrentScore, getTasks }) {
+      setTimeout(async () => {
+        const tasks = getTasks();
+        const payload = {
+          timestamp: new Date().toISOString(),
+          username,
+          score: getCurrentScore(),
+          completed_tasks_json: tasks,
+          total_task_count: tasks.filter((t) => !t.bonus).length,
+        };
+        await postToAPI(payload);
+      }, 60 * 60 * 1000);
+    }
 
     (function () {
       const STORAGE_KEY = "unchurnedGameState";
@@ -389,31 +439,6 @@
         submitButton: document.getElementById("submitButton"),
         confettiCanvas: document.getElementById("confettiCanvas")
       };
-
-      async function upsertPlayer(payload) {
-        try {
-          const { error } = await supabase
-            .from('players')
-            .upsert(payload, { onConflict: 'username' });
-          if (error) {
-            console.error('[Un]Churned :: Supabase upsert failed', error);
-          }
-        } catch (error) {
-          console.error('[Un]Churned :: Supabase request error', error);
-        }
-      }
-
-      async function onChooseUsername({ name, email, username }) {
-        await upsertPlayer({
-          timestamp: new Date().toISOString(),
-          name,
-          email,
-          username,
-          score: 0,
-          completed_tasks_json: [],
-          total_task_count: 0
-        });
-      }
 
       const ctx = elements.confettiCanvas.getContext ? elements.confettiCanvas.getContext("2d") : null;
       if (ctx) {
@@ -531,11 +556,15 @@
           view: "dashboard"
         });
 
-        await onChooseUsername({
-          name: state.user.name,
-          email: state.user.email,
-          username: state.user.username
-        });
+        try {
+          await onChooseUsername({
+            name: state.user.name,
+            email: state.user.email,
+            username: state.user.username
+          });
+        } catch (error) {
+          console.error('[Un]Churned :: Registration sync failed', error);
+        }
 
         setTimeout(() => {
           window.location.href = "dashboard.html";

@@ -546,12 +546,62 @@
   </footer>
 
   <script type="module">
-    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+    const API = "/api/players";
+    async function postToAPI(payload) {
+      const resp = await fetch(API, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const data = await resp.json().catch(() => ({}));
+      console.log("API status:", resp.status, data);
+      return { resp, data };
+    }
 
-    const supabase = createClient(
-      'https://zxjclmnxjavejrhfkuuj.supabase.co',
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp4amNsbW54amF2ZWpyaGZrdXVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkzODQ0MzIsImV4cCI6MjA3NDk2MDQzMn0.EdNZQOYypn1ZrH6iT15usXCruwkMFuCNu6n-dUDpALE'
-    );
+    // Save a new player when they register
+    async function onChooseUsername({ name, email, username }) {
+      const payload = {
+        timestamp: new Date().toISOString(),
+        name,
+        email,
+        username,
+        score: 0,
+        completed_tasks_json: [],
+        total_task_count: 0,
+      };
+      await postToAPI(payload);
+    }
+
+    // Update tasks (debounced so it doesn’t spam writes)
+    let updateTimer;
+    function onTasksChanged({ username, tasks, score }) {
+      clearTimeout(updateTimer);
+      updateTimer = setTimeout(async () => {
+        const payload = {
+          timestamp: new Date().toISOString(),
+          username,
+          score,
+          completed_tasks_json: tasks,
+          total_task_count: tasks.filter((t) => !t.bonus).length,
+        };
+        await postToAPI(payload);
+      }, 500);
+    }
+
+    // Fallback update after 60 minutes
+    function scheduleOneHourBump({ username, getCurrentScore, getTasks }) {
+      setTimeout(async () => {
+        const tasks = getTasks();
+        const payload = {
+          timestamp: new Date().toISOString(),
+          username,
+          score: getCurrentScore(),
+          completed_tasks_json: tasks,
+          total_task_count: tasks.filter((t) => !t.bonus).length,
+        };
+        await postToAPI(payload);
+      }, 60 * 60 * 1000);
+    }
 
     (function () {
       const STORAGE_KEY = "unchurnedGameState";
@@ -698,69 +748,31 @@
         confettiCanvas: document.getElementById("confettiCanvas")
       };
 
-      let tasksUpdateTimer = null;
-      let fallbackTimer = null;
-
-      async function upsertPlayer(payload) {
-        try {
-          const { error } = await supabase
-            .from('players')
-            .upsert(payload, { onConflict: 'username' });
-          if (error) {
-            console.error('[Un]Churned :: Supabase upsert failed', error);
-          }
-        } catch (error) {
-          console.error('[Un]Churned :: Supabase request error', error);
-        }
-      }
+      let fallbackScheduled = false;
 
       function getCompletedTasksArray() {
         return Array.from(state.completedTaskIds);
       }
 
-      async function syncPlayer({ immediate = false } = {}) {
-        if (!state.user.username) return;
-        scheduleOneHourBump();
-
-        const execute = async () => {
-          const tasksSnapshot = getCompletedTasksArray();
-          await upsertPlayer({
-            timestamp: new Date().toISOString(),
-            name: state.user.name,
-            email: state.user.email,
-            username: state.user.username,
-            score: state.score,
-            completed_tasks_json: tasksSnapshot,
-            total_task_count: tasksSnapshot.length
-          });
-        };
-
-        if (immediate) {
-          clearTimeout(tasksUpdateTimer);
-          await execute();
-          return;
-        }
-
-        clearTimeout(tasksUpdateTimer);
-        tasksUpdateTimer = setTimeout(execute, 500);
+      function scheduleFallbackIfNeeded() {
+        if (fallbackScheduled || !state.user.username) return;
+        scheduleOneHourBump({
+          username: state.user.username,
+          getCurrentScore: () => state.score,
+          getTasks: getCompletedTasksArray,
+        });
+        fallbackScheduled = true;
       }
 
-      function scheduleOneHourBump() {
-        if (!state.user.username || fallbackTimer) return;
-        fallbackTimer = setTimeout(async () => {
-          const tasksSnapshot = getCompletedTasksArray();
-          await upsertPlayer({
-            timestamp: new Date().toISOString(),
-            name: state.user.name,
-            email: state.user.email,
-            username: state.user.username,
-            score: state.score,
-            completed_tasks_json: tasksSnapshot,
-            total_task_count: tasksSnapshot.length
-          });
-          fallbackTimer = null;
-          scheduleOneHourBump();
-        }, 60 * 60 * 1000);
+      function syncPlayer() {
+        if (!state.user.username) return;
+        scheduleFallbackIfNeeded();
+        const tasksSnapshot = getCompletedTasksArray();
+        onTasksChanged({
+          username: state.user.username,
+          tasks: tasksSnapshot,
+          score: state.score,
+        });
       }
 
       elements.bucketImage.dataset.currentSrc = elements.bucketImage.getAttribute("src") || bucketFrames[0];
@@ -781,8 +793,7 @@
       restoreTaskSelections();
       updateBucketProgress();
       renderLeaderboard();
-      syncPlayer({ immediate: true });
-      scheduleOneHourBump();
+      syncPlayer();
       function hydrateChecklist() {
         if (elements.checklistCard.querySelector('.platform-section')) return;
         platformTasks.forEach((platform) => {
